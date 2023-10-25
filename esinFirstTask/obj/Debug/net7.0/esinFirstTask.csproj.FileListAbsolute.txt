@@ -29,3 +29,20 @@ C:\Users\Nikita\RiderProjects\EsinTasks\esinFirstTask\obj\Debug\net7.0\ref\esinF
 C:\Users\Nikita\RiderProjects\EsinTasks\esinFirstTask\bin\Debug\net7.0\Newtonsoft.Json.dll
 C:\Users\Nikita\RiderProjects\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.csproj.AssemblyReference.cache
 C:\Users\Nikita\RiderProjects\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.csproj.CopyComplete
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\bin\Debug\net7.0\esinFirstTask.exe
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\bin\Debug\net7.0\esinFirstTask.deps.json
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\bin\Debug\net7.0\esinFirstTask.runtimeconfig.json
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\bin\Debug\net7.0\esinFirstTask.dll
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\bin\Debug\net7.0\esinFirstTask.pdb
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\bin\Debug\net7.0\Newtonsoft.Json.dll
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.csproj.AssemblyReference.cache
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.AssemblyInfoInputs.cache
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.AssemblyInfo.cs
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.csproj.CoreCompileInputs.cache
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.csproj.CopyComplete
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.dll
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\refint\esinFirstTask.dll
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.pdb
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\esinFirstTask.genruntimeconfig.cache
+C:\Users\voron\OneDrive\Рабочий стол\EsinTasks\esinFirstTask\obj\Debug\net7.0\ref\esinFirstTask.dll

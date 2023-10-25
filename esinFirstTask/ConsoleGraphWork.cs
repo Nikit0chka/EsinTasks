@@ -1,11 +1,19 @@
 ﻿namespace esinFirstTask;
 
+/// <summary>
+/// Logic work with graph by console
+/// </summary>
 public static class ConsoleGraphWork
 {
     private delegate void MyMethodDelegate(Graph graph);
 
+    /// <summary>
+    /// Starting work with file by console
+    /// </summary>
+    /// <param name="graph">Graph to work</param>
     public static void Start(Graph graph)
     {
+        //Commands
         var commands = new Dictionary<string, MyMethodDelegate>
         {
             { "1", AddEdge }, { "2", AddVertex }, { "3", RemoveEdge },
@@ -41,6 +49,10 @@ public static class ConsoleGraphWork
         }
     }
 
+    /// <summary>
+    /// Writing graph to file
+    /// </summary>
+    /// <param name="graph">Graph to write</param>
     private static void WriteGraphToFile(Graph graph)
     {
         Console.WriteLine("Input path to file: ");
@@ -63,6 +75,10 @@ public static class ConsoleGraphWork
         }
     }
 
+    /// <summary>
+    /// Creating graph by file
+    /// </summary>
+    /// <param name="graph">Graph to create</param>
     private static void CreateGraphByFile(Graph graph)
     {
         Console.WriteLine("Input path to file: ");
@@ -85,6 +101,10 @@ public static class ConsoleGraphWork
         }
     }
 
+    /// <summary>
+    /// Adding edge to graph
+    /// </summary>
+    /// <param name="graph">Graph to adding edge</param>
     private static void AddEdge(Graph graph)
     {
         WriteVertices(graph);
@@ -139,6 +159,10 @@ public static class ConsoleGraphWork
         }
     }
 
+    /// <summary>
+    /// Removing edge from graph
+    /// </summary>
+    /// <param name="graph">Graph to remove edge</param>
     private static void RemoveEdge(Graph graph)
     {
         WriteVertices(graph);
@@ -164,6 +188,10 @@ public static class ConsoleGraphWork
         }
     }
 
+    /// <summary>
+    /// Removing vertex from graph
+    /// </summary>
+    /// <param name="graph">Graph for removing vertex</param>
     private static void RemoveVertex(Graph graph)
     {
         WriteVertices(graph);
@@ -189,6 +217,10 @@ public static class ConsoleGraphWork
         }
     }
 
+    /// <summary>
+    /// Adding vertex to graph
+    /// </summary>
+    /// <param name="graph">Graph to adding vertex</param>
     private static void AddVertex(Graph graph)
     {
         WriteVertices(graph);
@@ -214,18 +246,30 @@ public static class ConsoleGraphWork
         }
     }
 
+    /// <summary>
+    /// Writing graph vertices to console
+    /// </summary>
+    /// <param name="graph">Graph for output vertices</param>
     private static void WriteVertices(Graph graph)
     {
         foreach (var vertex in graph.GetVerticesList())
             Console.WriteLine(vertex.ToString());
     }
 
+    /// <summary>
+    /// Writing graph edges to console
+    /// </summary>
+    /// <param name="graph">Graph for output edges</param>
     private static void WriteEdges(Graph graph)
     {
         foreach (var edge in graph.GetEdgesList())
             Console.WriteLine(edge.ToString());
     }
 
+    /// <summary>
+    /// Writing commands to console
+    /// </summary>
+    /// <param name="commands">Commands for writing in console</param>
     private static void ShowCommands(Dictionary<string, MyMethodDelegate> commands)
     {
         foreach (var command in commands)

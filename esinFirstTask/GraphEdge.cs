@@ -1,12 +1,37 @@
 ﻿namespace esinFirstTask;
 
+
+/// <summary>
+/// Logic work with graph edge
+/// </summary>
 public class GraphEdge
 {
-    public string Name { get; set; }
-    public int Weight { get; set; }
-    public GraphVertex FirstVertex { get; set; }
-    public GraphVertex SecondVertex { get; set; }
+    /// <summary>
+    /// Edge name
+    /// </summary>
+    public string Name { get; }
 
+    /// <summary>
+    /// Edge weight
+    /// </summary>
+    public int Weight { get; }
+
+    /// <summary>
+    /// Edge first vertex
+    /// </summary>
+    public GraphVertex FirstVertex { get; }
+
+    /// <summary>
+    /// Edge second vertex
+    /// </summary>
+    public GraphVertex SecondVertex { get; }
+
+    /// <summary>
+    /// </summary>
+    /// <param name="name">Edge name</param>
+    /// <param name="firstVertex">Edge first vertex</param>
+    /// <param name="secondVertex">Edge second vertex</param>
+    /// <param name="weight">Edge weight</param>
     public GraphEdge(string name, GraphVertex firstVertex, GraphVertex secondVertex, int weight)
     {
         Name = name;
@@ -15,7 +40,9 @@ public class GraphEdge
         Weight = weight;
     }
 
-
+    /// <summary>
+    /// Override for better console work experience
+    /// </summary>
     public override string ToString()
     {
         return Weight == 0

@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "d2oBhbh99rDcFhLIRDPLScQX8qmrmjlpTe2hjyUER4KwoMMo5FG1bQiSR+hiAtAdHcwwL5CJoKxW8TSEcRbhUA==",
+  "dgSpecHash": "/7nvW6yQgxGqZ5I17DGZwnvA+suCkDFyQv/Y7Mig8jYrgBzwMPsGbv82qHCunnnz1BrkS36UPiEch7HZz2e+Ww==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Nikita\\RiderProjects\\EsinTasks\\esinFirstTask\\esinFirstTask.csproj",
+  "projectFilePath": "C:\\Users\\voron\\OneDrive\\Рабочий стол\\EsinTasks\\esinFirstTask\\esinFirstTask.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Nikita\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
+    "C:\\Users\\voron\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512"
   ],
   "logs": []
 }
