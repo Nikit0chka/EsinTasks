@@ -1,42 +1,47 @@
 ﻿namespace esinFirstTask;
 
-public class ConsoleGraphWork
+public static class ConsoleGraphWork
 {
-    private Graph _graph;
-    private delegate void MyMethodDelegate();
-    private readonly Dictionary<string, MyMethodDelegate> _commands;
+    private delegate void MyMethodDelegate(Graph graph);
 
-    public ConsoleGraphWork(Graph graph)
+    public static void Start(Graph graph)
     {
-        _graph = graph;
-        _commands = new Dictionary<string, MyMethodDelegate>
+        var commands = new Dictionary<string, MyMethodDelegate>
         {
             { "1", AddEdge }, { "2", AddVertex }, { "3", RemoveEdge },
             { "4", RemoveVertex }, { "5", WriteGraphToFile },
             { "6", CreateGraphByFile }, { "7", WriteEdges },
-            { "8", WriteVertices }, { "9", WriteCommands }
+            { "8", WriteVertices }
         };
-    }
 
-    public void Start()
-    {
-        string? input = "";
-        WriteCommands();
-
-        while (input != "0")
+        while (true)
         {
+            Console.WriteLine("9 - Show commands");
+            Console.WriteLine("0 - Back to manage graphs");
+
             Console.WriteLine("Input command: ");
-            input = Console.ReadLine();
+            var input = Console.ReadLine();
 
-            if (string.IsNullOrEmpty(input))
+            if (input == "0")
+                break;
+
+            if (input == "9")
+            {
+                ShowCommands(commands);
                 continue;
+            }
 
-            if (_commands.TryGetValue(input, out MyMethodDelegate? command))
-                command.Invoke();
+            if (string.IsNullOrEmpty(input) || !commands.ContainsKey(input))
+            {
+                Console.WriteLine("Incorrect input!");
+                continue;
+            }
+
+            commands[input].Invoke(graph);
         }
     }
 
-    private void WriteGraphToFile()
+    private static void WriteGraphToFile(Graph graph)
     {
         Console.WriteLine("Input path to file: ");
         var pathToFile = Console.ReadLine();
@@ -49,16 +54,16 @@ public class ConsoleGraphWork
 
         try
         {
-            _graph.AddGraphToFile(pathToFile);
+            graph.AddGraphToFile(pathToFile);
             Console.WriteLine("Graph added to file successfully!");
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(ex.Message);
         }
     }
 
-    private void CreateGraphByFile()
+    private static void CreateGraphByFile(Graph graph)
     {
         Console.WriteLine("Input path to file: ");
         var pathToFile = Console.ReadLine();
@@ -71,19 +76,19 @@ public class ConsoleGraphWork
 
         try
         {
-            _graph = new Graph(pathToFile);
+            graph.CreateGraphByFile(pathToFile);
             Console.WriteLine("Graph created by file successfully!");
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(ex.Message);
         }
     }
 
-    private void AddEdge()
+    private static void AddEdge(Graph graph)
     {
-        WriteVertices();
-        WriteEdges();
+        WriteVertices(graph);
+        WriteEdges(graph);
 
         Console.WriteLine("Input edge name: ");
         var edgeName = Console.ReadLine();
@@ -91,6 +96,19 @@ public class ConsoleGraphWork
         var firstVertexName = Console.ReadLine();
         Console.WriteLine("Input second vertex name: ");
         var secondVertexName = Console.ReadLine();
+        var edgeWeight = 0;
+
+        if (graph.IsOriented)
+        {
+            Console.WriteLine("Input edge weight: ");
+            var edgeWeightInput = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(edgeWeightInput) || !int.TryParse(edgeWeightInput, out edgeWeight))
+            {
+                Console.WriteLine("Check edge weight input! ");
+                return;
+            }
+        }
 
         if (string.IsNullOrEmpty(edgeName))
         {
@@ -112,19 +130,19 @@ public class ConsoleGraphWork
 
         try
         {
-            _graph.AddEdge(edgeName, firstVertexName, secondVertexName);
+            graph.AddEdge(edgeName, firstVertexName, secondVertexName, edgeWeight);
             Console.WriteLine("Edge added successfully!");
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(ex.Message);
         }
     }
 
-    private void RemoveEdge()
+    private static void RemoveEdge(Graph graph)
     {
-        WriteVertices();
-        WriteEdges();
+        WriteVertices(graph);
+        WriteEdges(graph);
 
         Console.WriteLine("Input removed edge name: ");
         var removedEdgeName = Console.ReadLine();
@@ -137,19 +155,19 @@ public class ConsoleGraphWork
 
         try
         {
-            _graph.RemoveEdgeByName(removedEdgeName);
+            graph.RemoveEdgeByName(removedEdgeName);
             Console.WriteLine("Edge removed successfully!");
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(ex.Message);
         }
     }
 
-    private void RemoveVertex()
+    private static void RemoveVertex(Graph graph)
     {
-        WriteVertices();
-        WriteEdges();
+        WriteVertices(graph);
+        WriteEdges(graph);
 
         Console.WriteLine("Input removed vertex name: ");
         var removedVertexName = Console.ReadLine();
@@ -162,22 +180,22 @@ public class ConsoleGraphWork
 
         try
         {
-            _graph.RemoveVertexByName(removedVertexName);
+            graph.RemoveVertexByName(removedVertexName);
             Console.WriteLine("Vertex removed successfully!");
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(ex.Message);
         }
     }
 
-    private void AddVertex()
+    private static void AddVertex(Graph graph)
     {
-        WriteVertices();
-        WriteEdges();
+        WriteVertices(graph);
+        WriteEdges(graph);
 
         Console.WriteLine("Input vertex name: ");
-        string? name = Console.ReadLine();
+        var name = Console.ReadLine();
 
         if (string.IsNullOrEmpty(name))
         {
@@ -187,34 +205,30 @@ public class ConsoleGraphWork
 
         try
         {
-            _graph.AddVertex(new GraphVertex(name));
-            Console.WriteLine("Edge added successfully!");
+            graph.AddVertex(new GraphVertex(name));
+            Console.WriteLine("Vertex added successfully!");
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(ex.Message);
         }
     }
 
-    private void WriteVertices()
+    private static void WriteVertices(Graph graph)
     {
-        Console.WriteLine("Your vertices: ");
-
-        foreach (GraphVertex vertex in _graph.GetVerticesList())
-            Console.WriteLine(vertex.Name);
+        foreach (var vertex in graph.GetVerticesList())
+            Console.WriteLine(vertex.ToString());
     }
 
-    private void WriteEdges()
+    private static void WriteEdges(Graph graph)
     {
-        Console.WriteLine("Your edges: ");
-
-        foreach (GraphEdge edge in _graph.GetEdgesList())
-            Console.Write($"{edge.Name} ");
+        foreach (var edge in graph.GetEdgesList())
+            Console.WriteLine(edge.ToString());
     }
 
-    private void WriteCommands()
+    private static void ShowCommands(Dictionary<string, MyMethodDelegate> commands)
     {
-        foreach (var command in _commands)
+        foreach (var command in commands)
             Console.WriteLine($"{command.Key} - {command.Value.Method.Name}");
     }
 }

@@ -1,73 +1,140 @@
-﻿using esinFirstTask;
+﻿namespace esinFirstTask;
 
-class Program
+internal static class Program
 {
-    private delegate void MyMethodDelegate();
-    private Dictionary<string, Graph> graphs;
+    private delegate void MyMethodDelegate(Dictionary<string, Graph> graphs);
 
-    private Dictionary<string, MyMethodDelegate> _commands; 
-    
-    static void Main(string[] args)
+    private static void Main()
     {
-        _commands = new Dictionary<string, MyMethodDelegate>
+        Dictionary<string, Graph> graphs = new();
+        var commands = new Dictionary<string, MyMethodDelegate>
         {
             { "1", ChooseGraph },
             { "2", ShowGraphs },
             { "3", AddGraph },
-            { "4", DeleteGraph }
+            { "4", DeleteGraph },
+            { "5", CopyGraph}
         };
-        Console.WriteLine("Input 'break' to exit");
+
         Console.WriteLine("Started...");
-
-        var input = "";
-        while (input != "break")
+        
+        while (true)
         {
+            Console.WriteLine("5 - show commands");
+            Console.WriteLine("0 - exit");
             Console.WriteLine("Input command: ");
-            input = Console.ReadLine();
+            var input = Console.ReadLine();
 
-            switch (input)
+            if (input == "0")
+                break;
+            
+            if (input == "5")
             {
-                case "1":
+                ShowCommands(commands);
+                continue;
             }
+
+            if (string.IsNullOrEmpty(input) || !commands.ContainsKey(input))
+            {
+                Console.WriteLine("Incorrect command!");
+                continue;
+            }
+
+            commands[input].Invoke(graphs);
         }
     }
-    private void ChooseGraph()
+
+    private static void ChooseGraph(Dictionary<string, Graph> graphs)
     {
-        ShowGraphs();
+        ShowGraphs(graphs);
         Console.WriteLine("Input graph key to choose: ");
-        var key = Console.ReadLine();
-    }
+        var graphKey = Console.ReadLine();
 
-    private void ShowGraphs()
-    {
-        foreach (var graph in graphs)
-            Console.WriteLine($"{graph.Key} - {graph.Value.Name}");
-    }
-
-    private void AddGraph()
-    {
-        Console.WriteLine("Input new graph name: ");
-        var graphName = Console.ReadLine();
-    }
-
-    private void DeleteGraph()
-    {
-        ShowGraphs();
-        Console.WriteLine("Input graph key to choose: ");
-        var key = Console.ReadLine();
-
-        if (string.IsNullOrEmpty(key))
+        if (string.IsNullOrEmpty(graphKey) || !graphs.ContainsKey(graphKey))
         {
-            Console.WriteLine("Graph key can not be empty!");
+            Console.WriteLine("There are no graph with this key");
             return;
         }
 
-        if (!graphs.ContainsKey(key))
+        ConsoleGraphWork.Start(graphs[graphKey]);
+    }
+
+    private static void ShowGraphs(Dictionary<string, Graph> graphs)
+    {
+        Console.Write("Your graphs: ");
+
+        foreach (var graph in graphs)
+        {
+            var orientation = graph.Value.IsOriented? "Oriented" : "Undirected";
+            Console.WriteLine($"{graph.Key} - {graph.Value.Name} ({orientation})");
+        }
+    }
+
+    private static void AddGraph(Dictionary<string, Graph> graphs)
+    {
+        Console.WriteLine("Input new graph name: ");
+        var graphName = Console.ReadLine();
+        Console.WriteLine("Input new graph key");
+        var graphKey = Console.ReadLine();
+        Console.WriteLine("Is graph oriented? y/n");
+        var graphOrientation = Console.ReadLine();
+
+
+        if (string.IsNullOrEmpty(graphName) || string.IsNullOrEmpty(graphKey) || string.IsNullOrEmpty(graphOrientation))
+        {
+            Console.WriteLine("Check input!");
+            return;
+        }
+
+        if (graphOrientation.ToLower() != "y" && graphOrientation.ToLower() != "n")
+        {
+            Console.WriteLine("Check input!");
+            return;
+        }
+
+        graphs.Add(graphKey, new Graph(graphName, graphOrientation == "y"));
+        Console.WriteLine("Graph added successfully!");
+    }
+
+    private static void DeleteGraph(Dictionary<string, Graph> graphs)
+    {
+        ShowGraphs(graphs);
+        Console.WriteLine("Input graph key to choose: ");
+        var key = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(key) || !graphs.ContainsKey(key))
         {
             Console.WriteLine("There are no graph with this key!");
             return;
         }
-
+        
         graphs.Remove(key);
+        Console.WriteLine("Graph removed successfully!");
+    }
+    
+    private static void ShowCommands(Dictionary<string, MyMethodDelegate> commands)
+    {
+        foreach (var command in commands)
+            Console.WriteLine($"{command.Key} - {command.Value.Method.Name}");
+    }    
+    
+    private static void CopyGraph(Dictionary<string, Graph> graphs)
+    {
+        ShowGraphs(graphs);
+        Console.WriteLine("Select the source graph key: ");
+        var sourceGraphKey = Console.ReadLine();
+        Console.WriteLine("Select graph to copy: ");
+        var graphToCopyKey = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(sourceGraphKey) || string.IsNullOrEmpty(graphToCopyKey) ||
+            !graphs.ContainsKey(sourceGraphKey) || !graphs.ContainsKey(graphToCopyKey))
+        {
+            Console.WriteLine("Check input!");
+            return;
+        }
+
+        graphs[graphToCopyKey] = new Graph(graphs[sourceGraphKey]);
+        
+        Console.WriteLine("Graph copied successfully!");
     }
 }

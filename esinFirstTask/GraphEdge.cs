@@ -2,15 +2,24 @@
 
 public class GraphEdge
 {
-    public readonly string Name;
-    private GraphVertex _firstVertex;
-    private GraphVertex _secondVertex;
-    public int Weight;
+    public string Name { get; set; }
+    public int Weight { get; set; }
+    public GraphVertex FirstVertex { get; set; }
+    public GraphVertex SecondVertex { get; set; }
 
-    public GraphEdge(string name, GraphVertex firstVertex, GraphVertex secondVertex)
+    public GraphEdge(string name, GraphVertex firstVertex, GraphVertex secondVertex, int weight)
     {
         Name = name;
-        _firstVertex = firstVertex;
-        _secondVertex = secondVertex;
+        FirstVertex = firstVertex;
+        SecondVertex = secondVertex;
+        Weight = weight;
+    }
+
+
+    public override string ToString()
+    {
+        return Weight == 0
+            ? $"Edge {Name}, FirstVertex - {FirstVertex.Name}, SecondVertex - {SecondVertex.Name}"
+            : $"Edge {Name}, FirstVertex - {FirstVertex.Name}, SecondVertex - {SecondVertex.Name}, Weight - {Weight}";
     }
 }

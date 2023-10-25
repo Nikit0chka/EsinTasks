@@ -2,20 +2,31 @@
 
 public class GraphVertex
 {
-    public readonly string Name;
-    private readonly List<GraphEdge> _graphEdges;
+    public string Name  { get; set; }
+    public List<GraphEdge> GraphEdges { get; set; }
 
     public GraphVertex(string name)
     {
         Name = name;
-        _graphEdges = new List<GraphEdge>();
+        GraphEdges = new List<GraphEdge>();
     }
 
     public void AddEdge(GraphEdge edge)
     {
-        if (_graphEdges.Contains(edge))
-            throw new Exception("can not add edge because it is already added");
+        if (GraphEdges.Contains(edge))
+           return;
         
-        _graphEdges.Add(edge);
+        GraphEdges.Add(edge);
     }
+
+    public void RemoveEdge(GraphEdge edge)
+    {
+        if (!GraphEdges.Contains(edge))
+            return;
+
+        GraphEdges.Remove(edge);
+    }
+    
+    public override string ToString() => $"Vertex: {Name}, Edges: {string.Join(", ", GraphEdges.Select(graphEdge => graphEdge.Name))}";
+    
 }

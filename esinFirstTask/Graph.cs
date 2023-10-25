@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+﻿using Newtonsoft.Json;
 
 namespace esinFirstTask;
 
@@ -7,39 +7,54 @@ public class Graph
     #region properties
 
     public string Name;
+    public bool IsOriented;
 
     private List<GraphEdge> _edges;
     private List<GraphVertex> _vertices;
-    private bool _isOriented;
 
     #endregion
 
     #region constructors
 
-    public Graph()
+    public Graph(string name, bool isOriented)
     {
+        Name = name;
+        IsOriented = isOriented;
+
         _edges = new List<GraphEdge>();
         _vertices = new List<GraphVertex>();
-    }
-
-    public Graph(string pathToFile)
-    {
-        _edges = new List<GraphEdge>();
-        _vertices = new List<GraphVertex>();
-
-        CreateGraphByFile(pathToFile);
     }
 
     public Graph(Graph graphToCopy)
     {
-        _edges = new List<GraphEdge>();
+        Name = graphToCopy.Name;
+        IsOriented = graphToCopy.IsOriented;
+
         _vertices = new List<GraphVertex>();
+        _edges = new List<GraphEdge>();
 
-        foreach (GraphEdge edge in graphToCopy._edges)
-            _edges.Add(edge);
+        var vertexMap = new Dictionary<GraphVertex, GraphVertex>();
 
-        foreach (GraphVertex vertex in graphToCopy._vertices)
-            _vertices.Add(vertex);
+        foreach (var vertex in graphToCopy._vertices)
+        {
+            var newVertex = new GraphVertex(vertex.Name);
+            _vertices.Add(newVertex);
+            vertexMap[vertex] = newVertex;
+        }
+
+        foreach (var edge in graphToCopy._edges)
+        {
+            var newEdge = new GraphEdge(
+                edge.Name,
+                vertexMap[edge.FirstVertex],
+                vertexMap[edge.SecondVertex],
+                edge.Weight
+            );
+
+            _edges.Add(newEdge);
+            vertexMap[edge.FirstVertex].AddEdge(newEdge);
+            vertexMap[edge.SecondVertex].AddEdge(newEdge);
+        }
     }
 
     #endregion
@@ -54,18 +69,23 @@ public class Graph
         _vertices.Add(addedVertex);
     }
 
-    public void AddEdge(string edgeName, string firstVertexName, string secondVertexName)
+    public void AddEdge(string edgeName, string firstVertexName, string secondVertexName, int edgeWeight)
     {
-        if (_edges.All(c => c.Name != edgeName))
+        if (_edges.Any(c => c.Name == edgeName))
             throw new Exception("an edge with the same name has already been added!");
         if (_vertices.All(c => c.Name != firstVertexName))
             throw new Exception("a vertex with this name has not been added!");
         if (_vertices.All(c => c.Name != secondVertexName))
             throw new Exception("a vertex with this name has not been added!");
 
-        GraphVertex firstVertex = _vertices.First(c => c.Name == firstVertexName);
-        GraphVertex secondVertex = _vertices.First(c => c.Name == secondVertexName);
-        _edges.Add(new GraphEdge(edgeName, firstVertex, secondVertex));
+        var firstVertex = _vertices.First(c => c.Name == firstVertexName);
+        var secondVertex = _vertices.First(c => c.Name == secondVertexName);
+        var addedEdge = new GraphEdge(edgeName, firstVertex, secondVertex, edgeWeight);
+
+        firstVertex.AddEdge(addedEdge);
+        secondVertex.AddEdge(addedEdge);
+
+        _edges.Add(addedEdge);
     }
 
     #endregion
@@ -87,7 +107,13 @@ public class Graph
         if (_vertices.All(c => c.Name != removedVertexName))
             throw new Exception("a vertex with this name has not been added!");
 
-        _vertices.Remove(_vertices.First(c => c.Name == removedVertexName));
+        var removedEdges = _edges.Where(edge =>
+            edge.FirstVertex.Name == removedVertexName || edge.SecondVertex.Name == removedVertexName).ToList();
+        foreach (var edge in removedEdges)
+            RemoveEdgeByName(edge.Name);
+
+        var removedVertex = _vertices.First(c => c.Name == removedVertexName);
+        _vertices.Remove(removedVertex);
     }
 
     public void RemoveEdgeByName(string removedEdgeName)
@@ -95,7 +121,14 @@ public class Graph
         if (_edges.All(c => c.Name != removedEdgeName))
             throw new Exception("an edge with this name has not been added!");
 
-        _edges.Remove(_edges.First(c => c.Name == removedEdgeName));
+        var removedVertices = _vertices.Where(vertex => vertex.GraphEdges.Any(edge => edge.Name == removedEdgeName))
+            .ToList();
+        var removedEdge = _edges.First(c => c.Name == removedEdgeName);
+
+        foreach (var vertex in removedVertices)
+            vertex.RemoveEdge(removedEdge);
+
+        _edges.Remove(removedEdge);
     }
 
     #endregion
@@ -106,28 +139,42 @@ public class Graph
     {
         try
         {
-            Json data = new(_edges, _vertices);
-            var json = JsonSerializer.Serialize(data);
+            var verticesData = new JsonVertices(_vertices, Name);
+            var edgesData = new JsonEdges(_edges, IsOriented);
 
-            File.WriteAllText(pathToFile, json);
+            var jsonVertices = JsonConvert.SerializeObject(verticesData, Formatting.Indented,
+                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+
+            var jsonEdges = JsonConvert.SerializeObject(edgesData, Formatting.Indented,
+                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+
+            File.WriteAllText(pathToFile + "_vertices.json", jsonVertices);
+            File.WriteAllText(pathToFile + "_edges.json", jsonEdges);
         }
         catch (Exception ex)
         {
-            throw new Exception($"exception by trying write json to file by path {pathToFile}: {ex}");
+            throw new Exception($"exception by trying write json to file by path {pathToFile}: {ex.Message}");
         }
     }
 
-    private void CreateGraphByFile(string pathToFile)
+    public void CreateGraphByFile(string pathToFile)
     {
         try
         {
-            var json = File.ReadAllText(pathToFile);
-            Json? data = JsonSerializer.Deserialize<Json>(json);
+            var jsonVertices = File.ReadAllText(pathToFile + "_vertices.json");
+            var jsonEdges = File.ReadAllText(pathToFile + "_edges.json");
 
-            if (data?.Vertices is not null)
-                _vertices = data.Vertices;
-            if (data?.Edges is not null)
-                _edges = data.Edges;
+            var verticesData = JsonConvert.DeserializeObject<JsonVertices>(jsonVertices,
+                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+
+            var edgesData = JsonConvert.DeserializeObject<JsonEdges>(jsonEdges,
+                new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
+
+            Name = verticesData!.Name;
+            _vertices = verticesData.Vertices;
+
+            IsOriented = edgesData!.IsOriented;
+            _edges = edgesData.Edges;
         }
         catch (Exception ex)
         {
