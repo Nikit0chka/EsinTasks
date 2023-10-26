@@ -269,27 +269,28 @@ public class Graph
         var newEdges = new List<GraphEdge>();
 
         for (var i = 0; i < complementGraph._vertices.Count; i++)
+        for (var j = i; j < complementGraph._vertices.Count; j++)
         {
-            for (var j = i; j < complementGraph._vertices.Count; j++)
-            {
-                if (verticesWithEdges.Any(pair => pair.Key == complementGraph._vertices[i] && pair.Value == complementGraph._vertices[j]))
-                    continue;
+            if (verticesWithEdges.Any(pair => pair.Key == complementGraph._vertices[i] && pair.Value == complementGraph._vertices[j]))
+                continue;
 
-                var newEdge = new GraphEdge(complementGraph._vertices[i].Name + "_" + complementGraph._vertices[j],
-                    complementGraph._vertices[i],
-                    complementGraph._vertices[j],
-                    0);
+            var newEdge = new GraphEdge(complementGraph._vertices[i].Name + "_" + complementGraph._vertices[j],
+                complementGraph._vertices[i],
+                complementGraph._vertices[j],
+                0);
 
-                complementGraph._vertices[i].AddEdge(newEdge);
-                complementGraph._vertices[j].AddEdge(newEdge);
-                newEdges.Add(newEdge);
-            }
+            complementGraph._vertices[i].AddEdge(newEdge);
+            complementGraph._vertices[j].AddEdge(newEdge);
+            newEdges.Add(newEdge);
         }
+
+        foreach (var edge in edgesToRemove)
+            complementGraph._edges.Remove(edge);
 
         Name = complementGraph.Name;
         IsOriented = complementGraph.IsOriented;
         _vertices = complementGraph._vertices;
-        _edges = complementGraph._edges;
+        _edges = newEdges;
     }
 
     /// <summary>
