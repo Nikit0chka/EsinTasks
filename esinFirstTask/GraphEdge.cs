@@ -9,22 +9,22 @@ public class GraphEdge
     /// <summary>
     /// Edge name
     /// </summary>
-    public string Name { get; }
+    public readonly string Name;
 
     /// <summary>
     /// Edge weight
     /// </summary>
-    public int Weight { get; }
+    public readonly int Weight;
 
     /// <summary>
     /// Edge first vertex
     /// </summary>
-    public GraphVertex FirstVertex { get; }
+    public readonly GraphVertex FirstVertex;
 
     /// <summary>
     /// Edge second vertex
     /// </summary>
-    public GraphVertex SecondVertex { get; }
+    public readonly GraphVertex SecondVertex;
 
     /// <summary>
     /// </summary>

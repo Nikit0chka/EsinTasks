@@ -188,14 +188,19 @@ public class Graph
             //json for writing in file
             var jsonEdges = _edges.Select(edge => new JsonEdge
             {
-                EdgeName = edge.Name, FirstVertexName = edge.FirstVertex.Name,
-                SecondVertexName = edge.SecondVertex.Name, Weight = edge.Weight
+                EdgeName = edge.Name, FirstVertexName = edge.FirstVertex.Name, SecondVertexName = edge.SecondVertex.Name,
+                Weight = edge.Weight
             }).ToList();
 
-            var jsonVertices = _vertices.Select(vertex => new JsonVertex { Name = vertex.Name }).ToList();
+            var jsonVertices = _vertices.Select(vertex => new JsonVertex
+            {
+                Name = vertex.Name
+            }).ToList();
 
             var jsonGraph = new JsonGraph
-                { JsonEdges = jsonEdges, JsonVertices = jsonVertices, IsOriented = IsOriented, Name = Name };
+            {
+                JsonEdges = jsonEdges, JsonVertices = jsonVertices, IsOriented = IsOriented, Name = Name
+            };
 
             //serializing json
             var data = JsonSerializer.Serialize(jsonGraph);
@@ -242,12 +247,120 @@ public class Graph
             });
 
             _vertices = new List<GraphVertex>(vertices);
-            _edges = new List<GraphEdge>(edges);
+            this._edges = new List<GraphEdge>(edges);
         }
         catch (Exception ex)
         {
             throw new Exception($"exception reading json from file by path {pathToFile}: {ex.Message}");
         }
+    }
+
+
+    /// <summary>
+    /// Creating a complement graph by another graph
+    /// </summary>
+    /// <param name="graph">Source graph</param>
+    public void CreateComplementGraph(Graph graph)
+    {
+        var complementGraph = new Graph(graph);
+        var edgesToRemove = complementGraph._edges;
+        var verticesWithEdges = complementGraph._edges.ToDictionary(edge => edge.FirstVertex, edge => edge.SecondVertex);
+        var newVertices = new List<GraphVertex>();
+        var newEdges = new List<GraphEdge>();
+
+        for (var i = 0; i < complementGraph._vertices.Count; i++)
+        {
+            for (var j = i; j < complementGraph._vertices.Count; j++)
+            {
+                if (verticesWithEdges.Any(pair => pair.Key == complementGraph._vertices[i] && pair.Value == complementGraph._vertices[j]))
+                    continue;
+
+                var newEdge = new GraphEdge(complementGraph._vertices[i].Name + "_" + complementGraph._vertices[j],
+                    complementGraph._vertices[i],
+                    complementGraph._vertices[j],
+                    0);
+
+                complementGraph._vertices[i].AddEdge(newEdge);
+                complementGraph._vertices[j].AddEdge(newEdge);
+                newEdges.Add(newEdge);
+            }
+        }
+
+        Name = complementGraph.Name;
+        IsOriented = complementGraph.IsOriented;
+        _vertices = complementGraph._vertices;
+        _edges = complementGraph._edges;
+    }
+
+    /// <summary>
+    /// Creating a union graph by another two graphs
+    /// </summary>
+    /// <param name="graph1">Graph 1</param>
+    /// <param name="graph2">Graph 2</param>
+    public void CreateUnionGraph(Graph graph1, Graph graph2)
+    {
+        var unionGraph = new Graph(graph1.Name + "_" + graph2.Name + "_union", graph1.IsOriented || graph2.IsOriented);
+
+        foreach (var vertex in graph1._vertices)
+            unionGraph._vertices.Add(new GraphVertex(vertex.Name));
+
+        foreach (var edge in graph1._edges)
+            unionGraph._edges.Add(new GraphEdge(edge.Name,
+                unionGraph._vertices.Find(graphVertex => graphVertex.Name == edge.FirstVertex.Name)!,
+                unionGraph._vertices.Find(graphVertex => graphVertex.Name == edge.SecondVertex.Name)!,
+                edge.Weight));
+
+        foreach (var vertex in graph2._vertices.Where(vertex =>
+                     !unionGraph._vertices.Exists(graphVertex => graphVertex.Name == vertex.Name)))
+            unionGraph._vertices.Add(new GraphVertex(vertex.Name));
+
+        foreach (var edge in graph2._edges.Where(edge => !unionGraph._edges.Exists(e => e.Name == edge.Name)))
+            unionGraph._edges.Add(new GraphEdge(edge.Name,
+                unionGraph._vertices.Find(v => v.Name == edge.FirstVertex.Name)!,
+                unionGraph._vertices.Find(v => v.Name == edge.SecondVertex.Name)!,
+                edge.Weight));
+
+        Name = unionGraph.Name;
+        IsOriented = unionGraph.IsOriented;
+        _vertices = unionGraph._vertices;
+        _edges = unionGraph._edges;
+    }
+
+    public void CreateJoinGraph(Graph graph1, Graph graph2)
+    {
+        var joinGraph = new Graph(graph1.Name + "_" + graph2.Name + "_join", graph1.IsOriented || graph2.IsOriented);
+
+
+        foreach (var vertex in graph1._vertices)
+            joinGraph._vertices.Add(new GraphVertex(vertex.Name));
+
+        foreach (var edge in graph1._edges)
+            joinGraph._edges.Add(new GraphEdge(edge.Name,
+                joinGraph._vertices.Find(v => v.Name == edge.FirstVertex.Name)!,
+                joinGraph._vertices.Find(v => v.Name == edge.SecondVertex.Name)!,
+                edge.Weight));
+
+        foreach (var vertex in graph2._vertices)
+            joinGraph._vertices.Add(new GraphVertex(vertex.Name));
+
+        foreach (var edge in graph2._edges)
+            joinGraph._edges.Add(new GraphEdge(edge.Name,
+                joinGraph._vertices.Find(v => v.Name == edge.FirstVertex.Name)!,
+                joinGraph._vertices.Find(v => v.Name == edge.SecondVertex.Name)!,
+                edge.Weight));
+
+        foreach (var vertex1 in graph1._vertices)
+        foreach (var vertex2 in graph2._vertices)
+            joinGraph._edges.Add(new GraphEdge(vertex1.Name + "_" + vertex2.Name,
+                joinGraph._vertices.Find(v => v.Name == vertex1.Name)!,
+                joinGraph._vertices.Find(v => v.Name == vertex2.Name)!,
+                0));
+
+
+        Name = joinGraph.Name;
+        IsOriented = joinGraph.IsOriented;
+        _vertices = joinGraph._vertices;
+        _edges = joinGraph._edges;
     }
 
     #endregion

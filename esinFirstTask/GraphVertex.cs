@@ -8,12 +8,12 @@ public class GraphVertex
     /// <summary>
     /// Vertex name
     /// </summary>
-    public string Name  { get; }
+    public readonly string Name;
 
     /// <summary>
     /// Vertex edges
     /// </summary>
-    public List<GraphEdge> GraphEdges { get; }
+    public readonly List<GraphEdge> GraphEdges;
 
     /// <summary>
     /// </summary>

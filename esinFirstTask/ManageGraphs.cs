@@ -15,6 +15,9 @@ internal static class ManageGraphs
         DeleteGraph = 4,
         CopyGraph = 5,
         ShowCommands = 6,
+        CreateComplementGraph = 7,
+        CreateJoinGraph = 8,
+        CreateUnixGraph = 9,
         Exit = 0
     }
 
@@ -31,7 +34,10 @@ internal static class ManageGraphs
             { Command.ShowGraphs, ShowGraphs },
             { Command.AddGraph, AddGraph },
             { Command.DeleteGraph, DeleteGraph },
-            { Command.CopyGraph, CopyGraph }
+            { Command.CopyGraph, CopyGraph },
+            { Command.CreateComplementGraph, CreateComplementGraph },
+            { Command.CreateJoinGraph, CreateJoinGraph },
+            { Command.CreateUnixGraph, CreateUnixGraph }
         };
 
         Console.WriteLine("Started...");
@@ -122,7 +128,8 @@ internal static class ManageGraphs
         var graphOrientation = Console.ReadLine();
 
 
-        if (string.IsNullOrEmpty(graphName) || string.IsNullOrEmpty(graphKey) || string.IsNullOrEmpty(graphOrientation))
+        if (string.IsNullOrEmpty(graphName) || string.IsNullOrEmpty(graphKey) || string.IsNullOrEmpty(graphOrientation) ||
+            graphOrientation.ToLower() != "y" && graphOrientation.ToLower() != "n")
         {
             Console.WriteLine("Check input!");
             return;
@@ -131,18 +138,6 @@ internal static class ManageGraphs
         if (graphs.ContainsKey(graphKey))
         {
             Console.WriteLine("Graph with such a key has already been added");
-            return;
-        }
-
-        if (graphs.Values.Any(graph => graph.Name == graphName))
-        {
-            Console.WriteLine("Graph with such a name has already been added");
-            return;
-        }
-
-        if (graphOrientation.ToLower() != "y" && graphOrientation.ToLower() != "n")
-        {
-            Console.WriteLine("Check input!");
             return;
         }
 
@@ -187,10 +182,10 @@ internal static class ManageGraphs
     private static void CopyGraph(Dictionary<string, Graph> graphs)
     {
         ShowGraphs(graphs);
-        Console.WriteLine("Select the source graph key: ");
-        var sourceGraphKey = Console.ReadLine();
         Console.WriteLine("Select graph to copy: ");
         var graphToCopyKey = Console.ReadLine();
+        Console.WriteLine("Select the source graph key: ");
+        var sourceGraphKey = Console.ReadLine();
 
         if (string.IsNullOrEmpty(sourceGraphKey) || string.IsNullOrEmpty(graphToCopyKey) ||
             !graphs.ContainsKey(sourceGraphKey) || !graphs.ContainsKey(graphToCopyKey))
@@ -201,5 +196,80 @@ internal static class ManageGraphs
 
         graphs[graphToCopyKey] = new Graph(graphs[sourceGraphKey]);
         Console.WriteLine("Graph copied successfully!");
+    }
+
+    /// <summary>
+    /// Creating a complement graph by another graph
+    /// </summary>
+    /// <param name="graphs">graphs for choosing graph</param>
+    private static void CreateComplementGraph(Dictionary<string, Graph> graphs)
+    {
+        ShowGraphs(graphs);
+        Console.WriteLine("Select graph key to complement: ");
+        var complementGraphKey = Console.ReadLine();
+        Console.WriteLine("Select the source graph key: ");
+        var sourceGraphKey = Console.ReadLine();
+
+        if (string.IsNullOrEmpty(sourceGraphKey) || string.IsNullOrEmpty(complementGraphKey) ||
+            !graphs.ContainsKey(sourceGraphKey) || !graphs.ContainsKey(complementGraphKey))
+        {
+            Console.WriteLine("Check input!");
+            return;
+        }
+
+        graphs[complementGraphKey].CreateComplementGraph(graphs[sourceGraphKey]);
+        Console.WriteLine("Graph complimented successfully!");
+    }
+
+    /// <summary>
+    /// Creating a joined graph by another two
+    /// </summary>
+    /// <param name="graphs">Graphs to choose</param>
+    private static void CreateJoinGraph(Dictionary<string, Graph> graphs)
+    {
+        ShowGraphs(graphs);
+        Console.WriteLine("Select graph key to join: ");
+        var graphToJoinKey = Console.ReadLine();
+        Console.WriteLine("Select first source graph: ");
+        var firstSourceGraphKey = Console.ReadLine();
+        Console.WriteLine("Select second source graph: ");
+        var secondJoinGraphKey = Console.ReadLine();
+
+
+        if (string.IsNullOrEmpty(graphToJoinKey) || string.IsNullOrEmpty(firstSourceGraphKey) || string.IsNullOrEmpty(secondJoinGraphKey) ||
+            !graphs.ContainsKey(graphToJoinKey) || !graphs.ContainsKey(firstSourceGraphKey) || !graphs.ContainsKey(secondJoinGraphKey))
+        {
+            Console.WriteLine("Check input!");
+            return;
+        }
+
+        graphs[graphToJoinKey].CreateJoinGraph(graphs[firstSourceGraphKey], graphs[secondJoinGraphKey]);
+        Console.WriteLine("Graph joined successfully!");
+    }
+
+    /// <summary>
+    /// Creating an unix graph by another two
+    /// </summary>
+    /// <param name="graphs">Graphs to choose</param>
+    private static void CreateUnixGraph(Dictionary<string, Graph> graphs)
+    {
+        ShowGraphs(graphs);
+        Console.WriteLine("Select graph key to unix: ");
+        var graphToUnix = Console.ReadLine();
+        Console.WriteLine("Select first source graph: ");
+        var firstSourceGraphKey = Console.ReadLine();
+        Console.WriteLine("Select second source graph: ");
+        var secondJoinGraphKey = Console.ReadLine();
+
+
+        if (string.IsNullOrEmpty(graphToUnix) || string.IsNullOrEmpty(firstSourceGraphKey) || string.IsNullOrEmpty(secondJoinGraphKey) ||
+            !graphs.ContainsKey(graphToUnix) || !graphs.ContainsKey(firstSourceGraphKey) || !graphs.ContainsKey(secondJoinGraphKey))
+        {
+            Console.WriteLine("Check input!");
+            return;
+        }
+
+        graphs[graphToUnix].CreateUnionGraph(graphs[firstSourceGraphKey], graphs[secondJoinGraphKey]);
+        Console.WriteLine("Graph union successfully!");
     }
 }
